@@ -1,26 +1,27 @@
 const express = require("express");
+// *** ADD ***
+const apicache = require("apicache");
+
+const workoutControllers = require("../../controllers/workoutController")
+const recordController = require("../../controllers/recordController");
 
 const router = express.Router();
+// *** ADD ***
+const cache = apicache.middleware;
 
-router.get("/", (req, res) => {
-    res.send("Get all workouts");
-});
+// *** ADD ***
+router.get("/", cache("2 minutes"), workoutController.getAllWorkouts);
 
-router.get("/:workoutId", (req, res) => {
-    res.send("Get an existing workout");
-});
+router.get("/:workoutId", workoutControllers.getOneWokout);
 
-router.post("/",(req,res)=> {
-    res.send("Create a new workout.");
-});
+// *** ADD ***
+router.get("/:workoutId/records", recordController.getRecordForWorkout);
 
-router.patch("/:workoutId",(req,res)=>{
-    res.send("Update an existing workout");
-});
+router.post("/",workoutControllers.createNewWorkout);
 
-router.delete("/:workoutId", (req,res)=>{
-    res.send("Delete an existing workout");
-});
+router.patch("/:workoutId",workoutControllers.updateOneWorkout);
+
+router.delete("/:workoutId", workoutControllers.deleteOneWorkOut);
 
 module.exports = router;
 

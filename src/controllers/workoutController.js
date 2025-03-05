@@ -1,27 +1,96 @@
-const getAllWokouts = (req, res) => {
-    res.send("Get All Workouts");
+const workoutService = require("../services/workoutService");
+
+const getAllWorkouts = (req, res) => {
+  // *** ADD ***
+  const { mode } = req.query;
+  try {
+    // *** ADD ***
+    const allWorkouts = workoutService.getAllWorkouts({ mode });
+    res.send({ status: "OK", data: allWorkouts });
+  } catch (error) {
+    res
+      .status(error?.status || 500)
+      .send({ status: "FAILED", data: { error: error?.message || error } });
+  }
 };
 
 const getOneWokout = (req, res) => {
-    res.send("Get an existing workout");
+  const {
+    params: { workoutId },
+  } = req;
+  if (!workoutId) {
+    return;
+  }
+  const workout = workoutService.getOneWorkout(workoutId);
+  res.send({ status: "OK", data: workout });
 };
 
 const createNewWorkout = (req, res) => {
-    res.send("Create a new Workout");
+
+  const { body } = req;
+  // *** ADD ***
+  if (
+    !body.name ||
+    !body.mode ||
+    !body.equipment ||
+    !body.exercises ||
+    !body.trainerTips
+  ) {
+    res
+      .status(400)
+      .send({
+        status: "FAILED",
+        data: {
+          error:
+            "One of the following keys is missing or is empty in request body: 'name', 'mode', 'equipment', 'exercises', 'trainerTips'",
+        },
+      });
+  }
+  // *** ADD ***
+  const newWorkout = {
+    name: body.name,
+    mode: body.mode,
+    equipment: body.equipment,
+    exercises: body.exercises,
+    trainerTips: body.trainerTips,
+  };
+  try {
+    const createdWorkout = workoutService.createNewWorkout(newWorkout);
+    res.status(201).send({ status: "OK", data: createdWorkout });
+  } catch (error) {
+    res
+      .status(error?.status || 500)
+      .send({ status: "FAILED", data: { error: error?.message || error } });
+  }
 };
 
 const updateOneWorkout = (req, res) => {
-    res.send("Update an existing Workout");
+  const {
+    body,
+    params: { workoutId },
+  } = req;
+  if (!workoutId) {
+    return;
+  }
+  const updatedWorkout = workoutService.updateOneWorkout(workoutId, body);
+  res.send({ status: "OK", data: updatedWorkout });
 };
 
 const deleteOneWorkOut = (req, res) => {
-    res.send("Delete an existing Workout");
+  const {
+    params: { workoutId },
+  } = req;
+  if (!workoutId) {
+    return;
+  }
+  workoutService.deleteOneWorkout(workoutId);
+  res.status(204).send({ status: "OK" });
 };
 
 module.exports = {
-    getAllWokouts,
-    getOneWokout,
-    createNewWorkout,
-    updateOneWorkout,
-    deleteOneWorkOut
+  getAllWorkouts,
+  getOneWokout,
+  createNewWorkout,
+  updateOneWorkout,
+  deleteOneWorkOut
 };

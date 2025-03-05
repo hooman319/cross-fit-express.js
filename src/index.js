@@ -1,10 +1,11 @@
 const express = require("express");
 //// Import v1 routes module.
 //const v1Router = require("./v1/routes")
+const bodyParser = require("body-parser");
 const v1WorkoutRouter = require("./v1/routes/workoutRoutes");
 
-const app = express();
 
+const app = express();
 const PORT = process.env.PORT || 3000;
 
 // remove because Avoids Mixing App-Level and Router-Level Code, Prevents Duplicate Route Definitions, and Ensures API Versioning and Route Organization
@@ -17,7 +18,7 @@ const PORT = process.env.PORT || 3000;
 // later without affecting /api/v1. || statement in Express.js is used to mount 
 // a router (v1Router) under a specific route prefix (/api/v1)
 //app.use("/api/v1", v1Router);
-
+app.use(bodyParser.json());
 app.use("/api/v1/workouts", v1WorkoutRouter);
 
 
